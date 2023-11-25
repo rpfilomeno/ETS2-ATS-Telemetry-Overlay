@@ -1,2 +1,30 @@
 # ETS2/ATS Telemetry Overlay
  Show telemetry server as game overlay
+
+![Alt text](image.png)
+
+## Install from Source Code
+To install you must have Python 3.9+ and run the following command:
+
+``python -m pip install git+https://github.com/rpfilomeno/ETS2-ATS-Telemetry-Overlay.git``
+
+## Run from Source code
+On the command line run:
+
+``python -m truckmon``
+
+## Build Executable
+Checkout the source code from git, have Python 3.9+ installed.
+
+### Install the package in the git repository:
+
+``python -m pip install .``
+
+### Install Pyinstaller:
+
+``python -m pip install pyinstaller``
+
+## Build the installer (will create an exe at dist\run_truckmon.exe):
+
+``pyinstaller installer\run_truckmon.py --clean --add-data "truckmon/data/*;truckmon/data" --noconsole --onefile --icon installer\truckmon.ico``
+

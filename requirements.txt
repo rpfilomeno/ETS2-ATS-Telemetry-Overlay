@@ -1,0 +1,9 @@
+pywin32
+pywin32-ctypes
+pygame
+backoff
+loguru
+json2txttree
+python-dateutil
+humanize
+psutil
