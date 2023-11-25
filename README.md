@@ -1,7 +1,7 @@
 # ETS2/ATS Telemetry Overlay
  Show telemetry server as game overlay
 
-![Alt text](image.png)
+![Alt text](truckmon.png)
 
 ## Install from Source Code
 To install you must have Python 3.9+ and run the following command:
