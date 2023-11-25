@@ -26,7 +26,7 @@ Checkout the source code from git, have Python 3.9+ installed.
 
 ``python -m pip install pyinstaller``
 
-## Build the installer (will create an exe at dist\run_truckmon.exe):
+### Build the installer (will create an exe at dist\run_truckmon.exe):
 
 ``pyinstaller installer\run_truckmon.py --clean --add-data "truckmon/data/*;truckmon/data" --noconsole --onefile --icon installer\truckmon.ico``
 
