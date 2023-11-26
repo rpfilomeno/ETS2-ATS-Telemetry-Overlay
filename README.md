@@ -2,12 +2,19 @@
  Show truck telemetry as game overlay!
 
 ![Alt text](image.png)
+
 ✅ Speed with **RPM indicator**!
+
 ✅ Speed limit indicator
+
 ✅ Cruise control indicator
+
 ✅ Fuel level and **liter/km inficator**!
+
 ✅ Next stop countdown timer (fatigue)
+
 ✅ Job delivery remaining time and **will highlight if running  late**!
+
 ✅ Auto hides on game pause!
 
 
