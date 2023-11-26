@@ -11,9 +11,8 @@
 ✅ Auto hides on game pause!
 
 
-
 ## Requirements
-Download and run [ets2-telemetry-server](https://github.com/Funbit/ets2-telemetry-server) first before as it check for the process Ets2Telemetry.exe and exits automatically is not found.
+Download and run [ets2-telemetry-server](https://github.com/Funbit/ets2-telemetry-server) first before as it check for the process Ets2Telemetry.exe and exits automatically if not found.
 
 ## Install from Source Code
 To install you must have Python 3.9+ and run the following command:
