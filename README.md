@@ -1,8 +1,18 @@
 # ETS2/ATS Telemetry Overlay
- Show telemetry server as game overlay
+ Show truck telemetry as game overlay!
 
 ![Alt text](image.png)
+✅ Speed with **RPM indicator**!
+✅ Speed limit indicator
+✅ Cruise control indicator
+✅ Fuel level and **liter/km inficator**!
+✅ Next stop countdown timer (fatigue)
+✅ Job delivery remaining time and **will highlight if running  late**!
+✅ Auto hides on game pause!
 
+
+
+## Requirements
 Download and run [ets2-telemetry-server](https://github.com/Funbit/ets2-telemetry-server) first before as it check for the process Ets2Telemetry.exe and exits automatically is not found.
 
 ## Install from Source Code

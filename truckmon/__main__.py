@@ -20,7 +20,7 @@ API_URL = "http://localhost:25555/api/ets2/telemetry"
 pygame.init()
 # initial render position
 display_info = pygame.display.Info()
-OVERLAY_XPOS = round( display_info.current_w /2 ) - 180
+OVERLAY_XPOS = round(display_info.current_w / 2) - 180
 OVERLAY_YPOS = display_info.current_h - 50
 OVERLAY_SIZE = 21
 
@@ -30,7 +30,6 @@ def main():
     """
     main entry
     """
-    
 
     screen = build_overlay()
     game_loop(screen)
@@ -86,10 +85,13 @@ def game_loop(screen: pygame.Surface):
     """
     main render loop
     """
-    gauge_h_spacing = 25 #todo: user config
+    gauge_h_spacing = 25  # todo: user config
 
     game_done = False
     telemetry_data = None
+    last_cruise = 0
+    dx = dy = dw = dh = 0
+
     clock = pygame.time.Clock()
 
     time_delay = 500
@@ -111,30 +113,48 @@ def game_loop(screen: pygame.Surface):
             if event.type == timer_event:
                 telemetry_data = get_telemetry()
 
-
         screen.fill((0, 0, 0))
 
         if not telemetry_data:
             continue
 
-        # if telemetry_data["game"]["paused"]:
-        #     continue
+        if telemetry_data["game"]["paused"]:
+            pygame.display.update()
+            continue
 
+        mx, my = pygame.mouse.get_pos()
 
+        if dw and dh:
+            if OVERLAY_XPOS < mx < (dx + dw) and OVERLAY_YPOS < my < (dy + dh):
+                pygame.display.update()
+                continue
 
         # draw speed
         dx = OVERLAY_XPOS
+        dy = OVERLAY_YPOS
+
+        rpm_percentage = telemetry_data["truck"]["engineRpm"]/telemetry_data["truck"]["engineRpmMax"]
+
+        
+        rpm_color = (0, 130, 0)
+        if rpm_percentage > 0.50 :
+            rpm_color = (20, 148, 222)
+            
+        if rpm_percentage > 0.70 :
+            rpm_color = (191, 4, 4)
+
         w, h = draw_gauge(
             screen,
-            (0, 130, 0),
+            (255, 255, 255),
             dx,
-            OVERLAY_YPOS,
+            dy,
             value=str(round(telemetry_data["truck"]["speed"])),
             name="speed",
             unit="km/h",
-            size=OVERLAY_SIZE, 
-            fill_mode= True if (telemetry_data["truck"]["speed"] > telemetry_data["navigation"]["speedLimit"]) else False
-
+            size=OVERLAY_SIZE,
+            fill_mode=True,
+            fill_percentage= rpm_percentage,
+            fill_color= rpm_color
         )
 
         # draw speed limits
@@ -143,22 +163,32 @@ def game_loop(screen: pygame.Surface):
             screen,
             (242, 111, 229),
             dx,
-            OVERLAY_YPOS,
+            dy,
             value=str(round(telemetry_data["navigation"]["speedLimit"])),
             name="limit",
             unit="km/h",
             size=OVERLAY_SIZE,
-            fill_mode= True if (telemetry_data["truck"]["cruiseControlSpeed"] >= telemetry_data["navigation"]["speedLimit"]) else False
+            fill_mode=True
+            if (
+                telemetry_data["truck"]["speed"]
+                >= telemetry_data["navigation"]["speedLimit"]
+            )
+            else False,
         )
 
         # draw cruise control
+        last_cruise = (
+            telemetry_data["truck"]["cruiseControlSpeed"]
+            if (telemetry_data["truck"]["cruiseControlSpeed"] > 0)
+            else last_cruise
+        )
         dx = dx + w + gauge_h_spacing
         w, h = draw_gauge(
             screen,
             (227, 227, 5),
             dx,
-            OVERLAY_YPOS,
-            value=str(round(telemetry_data["truck"]["cruiseControlSpeed"])),
+            dy,
+            value=str(round(last_cruise)),
             name="cruise",
             unit="km/h",
             size=OVERLAY_SIZE,
@@ -171,31 +201,63 @@ def game_loop(screen: pygame.Surface):
             screen,
             (2, 223, 235),
             dx,
-            OVERLAY_YPOS,
+            dy,
             value=str(round(telemetry_data["truck"]["fuel"])),
             name="fuel",
-            unit="liters",
-            size=OVERLAY_SIZE,
-            fill_mode=False,
+            unit= "%.2f l/km" % telemetry_data["truck"]["fuelAverageConsumption"],
+            size= OVERLAY_SIZE,
+            fill_mode=telemetry_data["truck"]["fuelWarningOn"],
         )
 
+        rest_time = parser.isoparse(telemetry_data["game"]["nextRestStopTime"])
+        rest_hour = str(rest_time.hour)
+        rest_minute = str(rest_time.minute)
 
+        # draw rest
+        dx = dx + w + gauge_h_spacing
+        w, h = draw_gauge(
+            screen,
+            (176, 96, 56),
+            dx,
+            dy,
+            value="{:02}:{:02}".format(int(rest_time.hour), int(rest_time.minute)),
+            name="next stop",
+            unit="remaining",
+            size=OVERLAY_SIZE,
+            fill_mode=True if int(rest_hour) < 1 else False,
+        )
+
+        # calculate job time
         game_now = parser.isoparse(telemetry_data["game"]["time"])
         job_due = parser.isoparse(telemetry_data["job"]["deadlineTime"])
-        remain = (job_due - game_now)
-            
+        nav_estimate = parser.isoparse(telemetry_data["navigation"]["estimatedTime"])
+        if game_now > job_due:
+            remain = "No Job"
+            late_flag = False
+        else:
+            diff = job_due - game_now
+            diff_hours, diff_remainder = divmod(diff.seconds, 3600)
+            diff_hours += diff.days * 24
+            diff_minutes, diff_seconds = divmod(diff_remainder, 60)
+            job_time = "{:02}:{:02}".format(int(diff_hours), int(diff_minutes))
+            late_flag = True if diff.seconds - nav_estimate.second < 30 * 60 else False 
+
         # draw job timer
         dx = dx + w + gauge_h_spacing
         w, h = draw_gauge(
             screen,
-            (255, 255, 255),
+            (157, 95, 227),
             dx,
-            OVERLAY_YPOS,
-            value=str(remain),
-            name="Job",
+            dy,
+            value=job_time,
+            name="delivery",
             unit="remaining",
             size=OVERLAY_SIZE,
+            fill_mode= late_flag
         )
+
+        dw = w
+        dh = h
 
         pygame.display.flip()
         clock.tick(30)
@@ -211,47 +273,57 @@ def draw_gauge(
     unit: str,
     size=34.0,
     fill_mode=False,
+    fill_percentage=1.0,
+    fill_color=None,
 ):
     """
     Draw a gauge
     """
 
-    min_width = 43 # todo: user config
+    min_width = 50  # todo: user config
 
     lcd_font = freetype.Font(
-        os.path.join(os.path.realpath(os.path.dirname(__file__)), "data","square.ttf")
+        os.path.join(os.path.realpath(os.path.dirname(__file__)), "data", "square.ttf")
     )
 
     if fill_mode:
+        lcd_color = color if fill_color else (1, 1, 1)
+        box_color = fill_color if fill_color else color
 
-        lcd_surface, rect = lcd_font.render(
-            text=value, fgcolor=(1, 1, 1), size=size
-        )
-        dx = min_width if (rect.width <= min_width) else rect.width + 9
-        pygame.draw.rect(
-            screen, color, pygame.Rect(x - 3, y - 3, dx, rect.height + 6)
-        )
         
+        lcd_surface, rect = lcd_font.render(text=value, fgcolor=lcd_color, size=size)
+        dx = rect.width + 6
+
+        if dx < min_width:
+            dx = min_width
+
+        fill = round(fill_percentage * (rect.height + 6))
+        fill_diff = rect.height + 6 - fill
+
+   
+        pygame.draw.rect(screen, box_color, pygame.Rect(x - 3, y - 3 + fill_diff, dx, fill))
+
     else:
         lcd_surface, rect = lcd_font.render(text=value, fgcolor=color, size=size)
-        dx = min_width if (rect.width <= min_width) else rect.width + 9
-        pygame.draw.rect(
-            screen, color, pygame.Rect(x - 3, y - 3, dx, rect.height + 6 ),1
-        )
-        
+
+        dx = rect.width + 6
+
+        if dx < min_width:
+            dx = min_width
+
+        # pygame.draw.rect(
+        #     screen, color, pygame.Rect(x - 3, y - 3, dx, rect.height + 6 ),1
+        # )
 
     screen.blit(lcd_surface, (x, y))
 
-    
     # nane
     sqr_surface, rect2 = lcd_font.render(text=name, fgcolor=color, size=size * 0.5)
     screen.blit(sqr_surface, (x - 3, y - 3 - rect2.height))
 
     # units
     sqr_surface, rect3 = lcd_font.render(text=unit, fgcolor=color, size=size * 0.5)
-    screen.blit(
-        sqr_surface, (x + dx - rect3.width, y + rect.height + rect3.height)
-    )
+    screen.blit(sqr_surface, (x + dx - rect3.width, y + rect.height + rect3.height))
 
     return (dx, rect.height + rect2.height + rect3.height)
 
@@ -261,17 +333,19 @@ def draw_gauge(
     (Exception),
     on_backoff=lambda details: logger.error(
         "API ERROR: Backing off {wait:0.1f} seconds after {tries}".format(**details)
-    ),max_tries=5
+    ),
+    max_tries=5,
 )
 def get_telemetry():
     with request.urlopen(API_URL) as url:
         data = json.load(url)
-        logger.info(json2txttree(data))
+        #logger.info(json2txttree(data))
         return data
-    
+
+
 def check_process() -> bool:
     for process in psutil.process_iter():
-        if process.name() == 'Ets2Telemetry.exe':
+        if process.name() == "Ets2Telemetry.exe":
             return True
     return False
 
