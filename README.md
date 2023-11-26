@@ -1,7 +1,7 @@
 # ETS2/ATS Telemetry Overlay
  Show telemetry server as game overlay
 
-![Alt text](truckmon.png)
+![Alt text](image.png)
 
 Download and run [ets2-telemetry-server](https://github.com/Funbit/ets2-telemetry-server) first before as it check for the process Ets2Telemetry.exe and exits automatically is not found.
 
