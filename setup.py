@@ -6,7 +6,7 @@ if sys.version_info < (3, 9):
 
 setup(
     name='ETS2/ATS Telemetry Overlay',
-    version='0.0.1',
+    version='0.0.2',
     description='Provides an overlay of iomportant truck telemetry',
     author='@notatallshaw',
     url='https://github.com/rpfilomeno/ETS2-ATS-Telemetry-Overlay.git',
