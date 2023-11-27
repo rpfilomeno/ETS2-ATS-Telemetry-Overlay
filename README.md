@@ -1,5 +1,5 @@
 # ETS2/ATS Telemetry Overlay
- Show truck telemetry as game overlay!
+Show truck telemetry as game overlay!
 
 ![Alt text](image.png)
 
@@ -25,7 +25,16 @@
 
 
 ## Requirements
-Download and run [ets2-telemetry-server](https://github.com/Funbit/ets2-telemetry-server) first before as it check for the process Ets2Telemetry.exe and exits automatically if not found.
+
+✏️ Download and run [Ets2 Telemetry Server](https://github.com/Funbit/ets2-telemetry-server) first! It check for the process Ets2Telemetry.exe and exits automatically if not found.
+
+
+✏️ You MUST run ETS2 / ATS in **Windowed Mode**
+
+
+✏️ Optional: Download and run [Borderless Gaming](https://github.com/Codeusa/Borderless-Gaming) to resize to bordeless full screeen
+
+
 
 ## Install from Source Code
 To install you must have Python 3.9+ and run the following command:
