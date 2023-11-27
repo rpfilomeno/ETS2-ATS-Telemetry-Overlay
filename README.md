@@ -21,7 +21,7 @@ Show truck telemetry as game overlay!
 ✅ Job delivery remaining time and **will highlight if running  late**!
 
 
-✅ Auto hides on game pause!
+✅ Auto hides!
 
 
 ## Requirements
