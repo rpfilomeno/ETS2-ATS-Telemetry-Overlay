@@ -19,6 +19,7 @@ from win10toast import ToastNotifier
 from loguru import logger
 import psutil
 
+game_done=False
 GAME_VISIBILITY = True
 API_URL = "http://localhost:25555/api/ets2/telemetry"
 GAME_NAMES = ["Euro Truck Simulator 2",
@@ -91,7 +92,7 @@ def game_loop():
     """
     main render loop
     """
-    
+    global game_done
     global GAME_VISIBILITY
     telemetry_data = None
     last_cruise = 0
@@ -103,23 +104,23 @@ def game_loop():
     pygame.time.set_timer(timer_event, 500)
 
     last_time = time.time()
-    game_done = False
-
+ 
     screen=build_overlay()
     while not game_done:
+        #logger.debug(game_done)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_done = True
-                pygame.display.quit()
-            
+             
             if event.type == timer_event:
+                if game_done:
+                    continue
                 telemetry_data = get_telemetry()
 
                 if(time.time() - last_time > 10):
                     resize_window()
 
-
-            
 
         screen.fill((0, 0, 0))
 
@@ -376,6 +377,9 @@ def resize_window():
         if hwnd:
             x, y, w, h = GetWindowRect(hwnd)
 
+    if not hwnd:
+        return
+
     hwnd = winxpgui.FindWindow(None, 'Truckmon Overlay')
     winxpgui.MoveWindow(hwnd, x, y, w, h, True)
 
@@ -429,7 +433,8 @@ def game_visibility(systray):
 def game_stop(systray):
     """exit truckmon"""
     logger.debug("user exits from sys tray")
-    pygame.quit()
+    global game_done
+    game_done = True
 
 
 @logger.catch
@@ -451,6 +456,8 @@ def main():
     systray.start()
     notify("Truckmon is running","Check the system tray for option.")
     game_loop()
+    systray.shutdown()
+    pygame.quit()
 
 if __name__ == "__main__":
     main()
