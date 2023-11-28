@@ -206,7 +206,40 @@ def game_loop():
             job_time = "{:02}:{:02}".format(int(diff_hours), int(diff_minutes))
             late_flag = True if diff_hours < 1 else False 
 
-  
+            nav_estimate = parser.isoparse(telemetry_data["navigation"]["estimatedTime"])
+            
+            estimate = nav_estimate - game_now
+            est_hours, est_remainder = divmod(estimate.seconds, 3600)
+            est_hours += estimate.days * 24
+            est_minutes, _ = divmod(est_remainder, 60)
+            est_time = "{:02}:{:02}".format(int(est_hours), int(est_minutes))
+
+            advantage = job_due - nav_estimate
+            adv_hours, adv_remainder = divmod(advantage.seconds, 3600)
+            adv_hours += advantage.days * 24
+            adv_minutes, _ = divmod(adv_remainder, 60)
+            adv_time = "{:02}:{:02}".format(int(adv_hours), int(est_minutes))
+
+            dst_km, dst_remainder = divmod(distance, 1000)
+            
+            # recoed lap per km
+            if dst_remainder == 0:
+                ( last_indicator, last_lap_str, last_lap_sec) =  laps[-1]
+
+                if last_indicator == "*":
+                    change_indicator = "↗"
+                elif advantage.seconds > last_lap_sec:
+                    change_indicator = "↗"
+                elif advantage.seconds < last_lap_sec:
+                    change_indicator = "↘"
+                else:
+                    change_indicator = "↔"
+                laps.append((change_indicator, adv_time, advantage.seconds))
+                #keeps last 3
+                if len(laps) > 3 or last_indicator == "*":
+                    laps.popleft()
+            
+
         # draw job timer
         dx = dx + w + gauge_h_spacing
         w, h = draw_gauge(
