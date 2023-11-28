@@ -1,11 +1,7 @@
 echo off
 setlocal
 
-.\venv\Scripts\python.exe -m pip install --upgrade pip
-.\venv\Scripts\python.exe -m pip freeze > requirements.txt
-.\venv\Scripts\python.exe -m pip uninstall -r requirements.txt -y
 .\venv\Scripts\python.exe -m pip install .
-.\venv\Scripts\python.exe -m pip freeze > requirements.txt
 
 echo:
 :PROMPT

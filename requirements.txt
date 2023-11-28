@@ -1,7 +1,7 @@
 altgraph==0.17.4
 backoff==2.2.1
+bump2version==1.0.1
 colorama==0.4.6
-ETS2-ATS-Telemetry-Overlay @ file:///D:/Github/ETS2-ATS-Telemetry-Overlay
 infi.systray==0.1.12
 loguru==0.7.2
 packaging==23.2

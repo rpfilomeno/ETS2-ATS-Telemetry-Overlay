@@ -22,6 +22,5 @@ setup(
         'psutil',
         'infi.systray',
         'win10toast',
-        'pyinstaller',
     ],
 )
