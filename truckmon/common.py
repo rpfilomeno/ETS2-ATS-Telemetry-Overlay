@@ -3,7 +3,7 @@ import ctypes
 from pygame import display, Surface, NOFRAME
 from win32 import winxpgui
 import psutil
-from win10toast import ToastNotifier
+from win11toast import toast as win11_toast
 from win32 import win32api, winxpgui, win32gui
 from win32.lib import win32con
 from win32gui import FindWindow, GetWindowRect
@@ -57,14 +57,7 @@ def notify(title, message):
     """Display toast notication"""
     logger.debug( "%s: %s" % (title, message))
     icon = os.path.join ( os.path.realpath(os.path.dirname(__file__)),'data','truckmon.ico')
-    toast = ToastNotifier()
-    toast.show_toast(
-        title,
-        message,
-        duration = 20,
-        icon_path = icon,
-        threaded = True,
-    )
+    win11_toast(title, message, icon=icon)
 
 def build_overlay() -> Surface:
     """

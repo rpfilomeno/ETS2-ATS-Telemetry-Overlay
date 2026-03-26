@@ -21,6 +21,6 @@ setup(
         'python-dateutil',
         'psutil',
         'infi.systray',
-        'win10toast',
+        'win11toast',
     ],
 )

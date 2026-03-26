@@ -1,0 +1,30 @@
+[project]
+name = "ets2-ats-telemetry-overlay"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+  "altgraph>=0.17.5",
+  "backoff>=2.2.1",
+  "bump2version>=1.0.1",
+  "colorama>=0.4.6",
+  "infi-systray>=0.1.12.1",
+  "loguru>=0.7.3",
+  "packaging>=26.0",
+  "pefile>=2024.8.26",
+  "psutil>=7.2.2",
+  "pygame>=2.6.1",
+  "pyinstaller>=6.19.0",
+  "pyinstaller-hooks-contrib>=2026.3",
+  "pypiwin32>=223",
+  "python-dateutil>=2.9.0.post0",
+  "pywin32>=311",
+  "setuptools>=82.0.1",
+  "six>=1.17.0",
+  "win11toast>=0.36.3",
+  "win32-setctime>=1.2.0",
+]
+
+[project.scripts]
+truckmon = "truckmon.__main__:main"
